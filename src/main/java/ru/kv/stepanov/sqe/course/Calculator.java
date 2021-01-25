@@ -1,18 +1,16 @@
 package ru.kv.stepanov.sqe.course;
 
-/*
+/**
  * Logic of this class is based on following BNF notation
  *
  * <expr> ::= <term> {<operation1> <term>}
  * <term> ::= <factor> {<operation2> <factor>}
- * <factor> ::= <unaryOp> <factor> | <number> | '('<expr>')'
+ * <factor> ::= <unaryOp> <factor> | <base> ['^' <factor>]
+ * <base> ::= <number> | '('<expr>')'
  * <number> ::= <digit> {<digit>} [<separator> <digit> {<digit>}]
  * <unaryOp> ::= '+' | '-'
- *
  */
-
 public class Calculator {
-
     /**
      * index of the position in {@code statement} string
      */
@@ -30,10 +28,10 @@ public class Calculator {
      */
     public String evaluate(String statement) throws IllegalArgumentException, ArithmeticException {
         if (statement == null
-                || statement.isEmpty()
-                || statement.contains("++")
-                || statement.contains("--")
-                || statement.matches(".*[^\u0028-\u002B\u002D-\u0039].*")) {
+            || statement.isEmpty()
+            || statement.contains("++")
+            || statement.contains("--")
+            || statement.matches(".*[^\u0028-\u002B\u002D-\u0039^].*")) {
             throw new IllegalArgumentException("Invalid statement string");
         }
 
@@ -142,6 +140,33 @@ public class Calculator {
                 positionIndex++;
                 result = -1 * getFactor(statement);
                 break;
+            default:
+                result = getBase(statement);
+                if (positionIndex < statement.length() && statement.charAt(positionIndex) == '^') {
+                    positionIndex++;
+                    result = Math.pow(result, getFactor(statement));
+                }
+                break;
+        }
+
+        return result;
+    }
+
+    /**
+     * Extracting from the string a substring corresponding to the definition of {@code <base>},
+     * and calculating it
+     *
+     * @param statement from which the substring is extracted
+     * @return calculated {@code <base>}
+     * @throws IllegalArgumentException if {@code statement} is invalid or IllegalArgumentException occurred in used methods
+     */
+    private double getBase(String statement) throws IllegalArgumentException {
+        if (positionIndex >= statement.length()) {
+            throw new IllegalArgumentException("Unexpected end of the line");
+        }
+
+        double result;
+        switch (statement.charAt(positionIndex)) {
             case '(': // expression in parentheses
                 positionIndex++;
                 result = getExpr(statement);
@@ -164,7 +189,8 @@ public class Calculator {
                 result = getNumber(statement);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid character '" + statement.charAt(positionIndex) + "' at position " + positionIndex);
+                throw new IllegalArgumentException("Invalid character '" + statement.charAt(positionIndex)
+                                                   + "' at position " + positionIndex);
         }
 
         return result;
