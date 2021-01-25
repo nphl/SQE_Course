@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class CalculatorTestsLR3 {
+public class CalculatorLR3Tests {
 
     private static Calculator calc;
 
