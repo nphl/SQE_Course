@@ -126,4 +126,13 @@ public class CalculatorCourseWorkTests {
         Assertions.assertThrows(IllegalArgumentException.class, () -> calc.evaluate(input));
     }
 
+    @Test
+    public void evaluatePowerOfAfterPowerOfAfterPowerOf() {
+        // given
+        String input = "2^^^3";
+
+        // assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> calc.evaluate(input));
+    }
+
 }
